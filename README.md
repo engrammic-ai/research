@@ -56,4 +56,4 @@ pdflatex whitepaper-beyond-retrieval.tex
 
 ## License
 
-CC BY 4.0 - You are free to share and adapt this work for any purpose, even commercially, as long as you give appropriate credit.
+CC BY-SA 4.0 - Share and adapt freely with attribution. Derivatives must use the same license.
