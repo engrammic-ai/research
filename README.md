@@ -1,29 +1,27 @@
 # Engrammic Research
 
-## Why This Matters
+## Before intelligence can be trusted, it must learn to doubt.
 
-Aligned AI needs to think in shapes humans recognize.
+AI systems retrieve, generate, and confidently hallucinate. When they are wrong, they do not notice - nothing in how they work tracks the difference between what was observed and what was concluded. There is no mechanism for doubt, no architecture for uncertainty, no way to ask "why do I believe this?" and receive a real answer.
 
-The alignment problem is often framed as getting AI to want the right things. But there is a deeper question: can AI reason in ways humans can follow, verify, and trust? An agent that reaches correct conclusions through opaque processes is not aligned - it is a black box that happens to agree with us today.
+This is the problem that is not being solved. We are racing to make AI more capable, but capability without epistemics is just a more eloquent way to be wrong.
 
-Human reasoning has structure. We distinguish observations from beliefs. We track why we believe things. We revise our views when evidence changes. We can explain our thinking to others who can then verify it.
+Consider why you trust people. It is not because they are always right. It is because when they are wrong, they notice. They update. They hold their beliefs loosely enough to revise them. They can tell you why they believe what they believe, and what evidence would change their mind.
 
-We believe AI systems need the same epistemic structure - not because it makes them more capable, but because it makes alignment verifiable. An AI that externalizes its beliefs, grounds them in evidence, and revises them coherently is an AI whose reasoning humans can audit, challenge, and correct.
-
-This is the foundation for agentic alignment: AI that thinks in the same shape as humans.
+This is not a feature bolted onto human intelligence. This is the shape intelligence takes when it is honest with itself.
 
 ## The Open Problem
 
-Current agent memory systems treat all stored information uniformly. A hallucination persists with the same standing as a verified fact. Contradictions accumulate. Corrections do not propagate. There is no answer to "why do you believe that?" except generated confabulation.
+We believe aligned, trustworthy AI will not come from scaling parameters alone. It will come from systems that think epistemically: systems that know what they know, why they believe it, and when to update. Systems that distinguish between observation and conclusion, between confident and uncertain, between current and outdated.
 
-We need AI systems that can:
+Concretely, we need AI that can:
 
-- **Know what they know** - distinguish observations from claims from verified facts from synthesized beliefs
-- **Know why they know it** - trace any belief to its evidential roots
-- **Revise coherently** - propagate corrections through dependent beliefs
-- **Coordinate truthfully** - maintain shared understanding across agents
+- **Hold doubt** - distinguish observations from claims from verified facts from synthesized beliefs
+- **Trace provenance** - follow any belief back to the observations that ground it
+- **Revise coherently** - update dependent beliefs when underlying evidence shifts
+- **Coordinate truthfully** - maintain shared understanding across agents without contradiction
 
-No existing system does all four. This repository contains our research toward solving this problem. We publish it openly because the problem is too important to solve alone.
+No existing system does all four. This repository contains our research toward solving this problem. We publish openly because the problem is too important to solve alone.
 
 ## Our Approach
 
@@ -35,7 +33,7 @@ The papers here formalize this approach. We invite the research community to cri
 
 **[Beyond Retrieval: Layered Epistemic Agent Protocol for Coherent Agent Memory](papers/whitepaper-beyond-retrieval.tex)**
 
-The technical paper. Introduces LeAP (Layered Epistemic Agent Protocol) with stratified epistemic types, warrant functions, coherence invariants, and AGM-compliant belief revision. Presents CITE, a four-layer architecture with write-time coherence enforcement.
+The technical paper. Introduces LeAP with stratified epistemic types, warrant functions, coherence invariants, and AGM-compliant belief revision. Presents CITE, a four-layer architecture with write-time coherence enforcement.
 
 **[From Memory to Epistemics](papers/whitepaper-memory-to-epistemics.tex)**
 
