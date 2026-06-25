@@ -1,45 +1,52 @@
 # Engrammic Research
 
-Open research on epistemic memory for AI agents.
+## The Question
 
-## The Problem
+Can you trust an AI that cannot explain why it believes what it believes?
 
-Current agent memory systems treat all stored information uniformly. A hallucination from session 1 persists with the same standing as a verified fact from session 10. Contradictions accumulate. Corrections don't propagate. The result: agents that contradict themselves, retrieve stale beliefs, and cannot explain why they believe what they believe.
+As AI agents become more autonomous, they accumulate beliefs over time. They learn from interactions, store observations, draw conclusions. But current systems have no structure for distinguishing a verified fact from a hallucination stored three sessions ago. No mechanism for propagating corrections. No way to answer "why do you believe that?" except by generating a plausible-sounding explanation.
 
-## Our Thesis
+This is not a retrieval problem. It is an epistemology problem.
 
-Agent memory is not a retrieval problem. It is an epistemology problem.
+## The Open Problem
 
-This repository contains our research formalizing this thesis and proposing solutions. We're publishing here because we believe the problem is too important to solve alone. We invite the broader AI research community to critique, extend, and build upon this work.
+We believe trustworthy AI requires agents that can:
+
+- **Know what they know** - distinguish observations from claims from verified facts from synthesized beliefs
+- **Know why they know it** - trace any belief back to its evidential roots
+- **Revise coherently** - propagate corrections through dependent beliefs when facts change
+- **Coordinate truthfully** - maintain shared understanding across multiple agents
+
+No existing system does all four. We are publishing our research here because this problem is too important to solve alone.
+
+## Our Approach
+
+We propose treating agent memory as applied epistemology: stratified belief types with distinct evidence requirements, write-time coherence enforcement, and formal belief revision that preserves audit trails.
+
+The papers in this repository formalize this approach and present an architecture for implementing it. We invite the broader research community to critique, extend, challenge, and build upon this work.
 
 ## Papers
 
-### Beyond Retrieval: Layered Epistemic Agent Protocol for Coherent Agent Memory
+**[Beyond Retrieval: Layered Epistemic Agent Protocol for Coherent Agent Memory](papers/whitepaper-beyond-retrieval.tex)**
 
-The technical paper. Introduces LeAP (Layered Epistemic Agent Protocol), a framework that treats agent memory as an epistemology problem with stratified epistemic types, warrant functions, coherence invariants, and AGM-compliant belief revision. Presents CITE (Context In Tiered Epistemology), a four-layer architecture implementing LeAP with write-time coherence enforcement.
+The technical paper. Introduces LeAP, a framework with stratified epistemic types, warrant functions, coherence invariants, and AGM-compliant belief revision. Presents CITE, a four-layer architecture with write-time coherence enforcement. Includes formal definitions and proofs.
 
-[`papers/whitepaper-beyond-retrieval.tex`](papers/whitepaper-beyond-retrieval.tex)
+**[From Memory to Epistemics](papers/whitepaper-memory-to-epistemics.tex)**
 
-### From Memory to Epistemics: The Architectural Case for Externalized Epistemics
-
-The foundational argument. Presents convergent evidence from information theory, optimization theory, interpretability research, distributed systems, and neuroscience that epistemic state must be maintained external to the models doing inference.
-
-[`papers/whitepaper-memory-to-epistemics.tex`](papers/whitepaper-memory-to-epistemics.tex)
+The foundational argument. Convergent evidence from information theory, optimization, interpretability, distributed systems, and neuroscience that epistemic state must live outside the models doing inference.
 
 ## Contributing
 
-We welcome contributions of all kinds:
+We welcome:
 
-- **Critique**: Find holes in our arguments. Point to prior work we missed. Challenge our assumptions.
-- **Extensions**: Formal proofs, additional theorems, connections to other frameworks.
-- **Benchmarks**: Evaluation methodologies, datasets, reproducibility improvements.
-- **Implementations**: Alternative architectures satisfying LeAP axioms.
+- **Critique** - holes in our arguments, missing prior work, unsupported claims
+- **Extensions** - new theorems, connections to other frameworks, alternative formalizations
+- **Benchmarks** - evaluation methodologies that measure what matters
+- **Implementations** - other architectures satisfying the same axioms
 
-Open an issue to start a discussion, or submit a PR with proposed changes.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Building the Papers
-
-Requires a LaTeX distribution with standard packages. To build:
+## Building
 
 ```bash
 cd papers
@@ -51,9 +58,9 @@ pdflatex whitepaper-beyond-retrieval.tex
 
 ## Related
 
-- [Engrammic](https://github.com/engrammic-ai/engrammic) - Reference implementation of LeAP/CITE
-- [engrammic-primitives](https://pypi.org/project/engrammic-primitives/) - Schema and type definitions
+- [Engrammic](https://github.com/engrammic-ai/engrammic) - Reference implementation
+- [engrammic-primitives](https://pypi.org/project/engrammic-primitives/) - Schema and types
 
 ## License
 
-CC BY-SA 4.0 - Share and adapt freely with attribution. Derivatives must use the same license.
+CC BY-SA 4.0
