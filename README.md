@@ -6,7 +6,7 @@ AI systems retrieve, generate, and confidently hallucinate. When they are wrong,
 
 We believe aligned, trustworthy AI requires systems that think epistemically: systems that know what they know, why they believe it, and when to update. We publish openly because this problem is too important to solve alone.
 
-[Beyond Retrieval](papers/whitepaper-beyond-retrieval.tex) is the technical paper, introducing LeAP with stratified epistemic types, warrant functions, coherence invariants, AGM-compliant belief revision, and the CITE architecture with write-time coherence enforcement.
+[Beyond Retrieval](papers/whitepaper-beyond-retrieval.tex) is the technical paper, introducing the Layered Epistemic Agent Protocol (LeAP) with stratified epistemic types, warrant functions, coherence invariants, AGM-compliant belief revision, and the Context In Tiered Epistemology (CITE) architecture with write-time coherence enforcement.
 
 [From Memory to Epistemics](papers/whitepaper-memory-to-epistemics.tex) is the foundational argument, drawing on convergent evidence from information theory, optimization, interpretability, distributed systems, and neuroscience that epistemic state must live outside the models doing inference.
 
