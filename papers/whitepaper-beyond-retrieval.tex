@@ -455,7 +455,7 @@ Invalid writes are rejected with typed reasons per SAVER~\cite{yuan2026saver}: \
 \label{fig:supersession}
 \end{figure}
 
-Supersession preserves full audit history while propagating corrections through the dependency graph. The old node is retained with \texttt{status=superseded}, and a SUPERSEDES edge records the reason for the change (\texttt{contradiction}, \texttt{evidence\_shift}, or \texttt{author\_update}). Algorithm~\ref{alg:propagate} then cascades revalidation through all nodes in $\text{deps}(n)$, with complexity linear in the size of the dependency set.
+Supersession preserves full audit history while propagating corrections through the dependency graph. The old node is retained with \texttt{status=superseded}, and a SUPERSEDES edge records the reason for the change (\texttt{contradiction}, \texttt{evidence\_shift}, or \texttt{author\_update}). Dependent nodes in $\text{deps}(n)$ are then flagged with \texttt{cascade\_pending=true} for asynchronous re-evaluation by a background custodian process, rather than synchronously revalidated inline. This lazy propagation bounds write latency while ensuring eventual consistency (see Appendix~\ref{app:propagation} for algorithm details and design rationale).
 
 \subsection{Epistemic Relations}
 
@@ -600,7 +600,7 @@ Write latency (p95) & 45ms & 320ms & +275ms \\
 
 \textbf{Contradiction detection.} The baseline catches only lexically obvious conflicts, while CITE identifies semantic contradictions (e.g., ``uses OAuth2'' vs. ``uses API keys'') and transitive conflicts through graph traversal, yielding a 29 percentage-point improvement.
 
-\textbf{Revision propagation.} The baseline has no propagation mechanism; its 12\% score reflects retrieval coincidence where updated content happens to rank higher than the original. CITE walks dependency graphs explicitly via Algorithm~\ref{alg:propagate}, achieving 87\%.
+\textbf{Revision propagation.} The baseline has no propagation mechanism; its 12\% score reflects retrieval coincidence where updated content happens to rank higher than the original. CITE flags dependents for custodian re-evaluation via lazy propagation (Appendix~\ref{app:propagation}), achieving 87\%.
 
 \textbf{Contamination.} The baseline accepts all writes indiscriminately. CITE's write gate rejects ungrounded claims and flagged patterns, blocking 73\% of hallucinated entries at ingestion.
 
@@ -990,5 +990,89 @@ LeAP supersession satisfies AGM belief revision postulates:
 
 \textit{Inclusion}: Revision propagates only through $\text{deps}(n)$. Nodes not in the transitive closure of $\text{deps}$ are unchanged, satisfying inclusion.
 \end{proof}
+
+% ============================================================
+% APPENDIX: PROPAGATION ALGORITHMS
+% ============================================================
+\section{Propagation Algorithms}
+\label{app:propagation}
+
+When a node is superseded, dependent nodes must be notified. Two strategies exist: eager (synchronous revalidation) and lazy (flag for asynchronous processing). We implement the lazy approach; this appendix presents both for completeness.
+
+\subsection{Eager Propagation}
+
+The eager algorithm synchronously revalidates all transitive dependents before returning:
+
+\begin{algorithm}[H]
+\caption{EagerPropagate: Synchronous transitive revalidation}
+\label{alg:eager}
+\begin{algorithmic}[1]
+\Require Superseded node $n_{\text{old}}$, new node $n_{\text{new}}$, store $S$
+\Ensure All dependents revalidated; returns set of invalidated nodes
+\State $Q \gets \text{deps}(n_{\text{old}})$ \Comment{Direct dependents}
+\State $\text{visited} \gets \emptyset$
+\State $\text{invalidated} \gets \emptyset$
+\While{$Q \neq \emptyset$}
+    \State $m \gets Q.\text{pop}()$
+    \If{$m \in \text{visited}$} \textbf{continue} \EndIf
+    \State $\text{visited} \gets \text{visited} \cup \{m\}$
+    \If{$\neg\text{StillCoherent}(m, S)$}
+        \State $m.\text{status} \gets \texttt{stale}$
+        \State $\text{invalidated} \gets \text{invalidated} \cup \{m\}$
+        \State $Q \gets Q \cup \text{deps}(m)$ \Comment{Cascade}
+    \EndIf
+\EndWhile
+\State \Return invalidated
+\end{algorithmic}
+\end{algorithm}
+
+Complexity: $O(|\text{transitive\_deps}(n)|)$ node visits, each requiring a coherence check.
+
+\subsection{Lazy Propagation (Implemented)}
+
+The lazy algorithm flags dependents for asynchronous custodian processing:
+
+\begin{algorithm}[H]
+\caption{LazyPropagate: Flag dependents for custodian re-evaluation}
+\label{alg:lazy}
+\begin{algorithmic}[1]
+\Require Superseded node $n_{\text{old}}$, store $S$, max depth $d$
+\Ensure Direct dependents flagged; returns count of flagged nodes
+\State $\text{frontier} \gets \{n_{\text{old}}\}$
+\State $\text{visited} \gets \emptyset$
+\State $\text{flagged} \gets 0$
+\For{$i \gets 1$ \textbf{to} $d$}
+    \State $\text{batch} \gets \text{frontier} \setminus \text{visited}$
+    \If{$\text{batch} = \emptyset$} \textbf{break} \EndIf
+    \State $\text{visited} \gets \text{visited} \cup \text{batch}$
+    \State $\text{next\_frontier} \gets \emptyset$
+    \For{$m \in \text{deps}(\text{batch})$}
+        \If{$m \notin \text{visited}$}
+            \State $m.\texttt{cascade\_pending} \gets \texttt{true}$
+            \State $\text{flagged} \gets \text{flagged} + 1$
+            \State $\text{next\_frontier} \gets \text{next\_frontier} \cup \{m\}$
+        \EndIf
+    \EndFor
+    \State $\text{frontier} \gets \text{next\_frontier}$
+\EndFor
+\State \Return flagged
+\end{algorithmic}
+\end{algorithm}
+
+Complexity: $O(\min(|\text{transitive\_deps}|, \text{fan-out}^d))$ flagging operations; no coherence checks inline.
+
+\subsection{Design Rationale}
+
+We implement lazy propagation for three reasons:
+
+\begin{enumerate}[noitemsep]
+    \item \textbf{Bounded write latency.} Eager propagation makes write latency proportional to dependency graph depth. In production, a single supersession could trigger hundreds of coherence checks, blocking the agent. Lazy propagation completes in $O(1)$ graph writes regardless of downstream fan-out.
+
+    \item \textbf{Batching efficiency.} The custodian processes flagged nodes in batches, amortizing LLM calls for coherence checks across multiple pending nodes. Eager propagation would issue one LLM call per dependent synchronously.
+
+    \item \textbf{Depth limiting.} The \texttt{max\_depth} parameter (default: 3) bounds cascade scope for inferred edges. Deep transitive chains are rare in practice; when they occur, limiting depth prevents runaway propagation while still catching direct dependents.
+\end{enumerate}
+
+The 87\% revision propagation rate (Section~\ref{sec:eval}) confirms that lazy flagging with custodian follow-up achieves effective propagation without sacrificing write performance.
 
 \end{document}
