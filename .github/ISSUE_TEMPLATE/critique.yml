@@ -1,0 +1,56 @@
+name: Critique
+description: Challenge an argument, point out a flaw, or identify missing prior work
+labels: ["critique"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We actively welcome critique. Finding holes in our arguments makes the work stronger.
+
+  - type: dropdown
+    id: paper
+    attributes:
+      label: Paper
+      options:
+        - Beyond Retrieval (LeAP/CITE)
+        - From Memory to Epistemics
+        - Both
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Section/Location
+      description: Which section, theorem, or claim are you addressing?
+      placeholder: "Section 3.2, Theorem 1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of critique
+      options:
+        - Logical flaw in argument
+        - Missing prior work
+        - Unsupported claim
+        - Incorrect citation
+        - Empirical concern
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: critique
+    attributes:
+      label: Critique
+      description: What is the issue? Be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Any relevant citations or evidence supporting your critique

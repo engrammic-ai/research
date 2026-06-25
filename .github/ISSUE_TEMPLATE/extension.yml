@@ -1,0 +1,54 @@
+name: Extension Proposal
+description: Propose an extension, additional theorem, or connection to other work
+labels: ["extension"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We welcome proposals that extend the framework or connect it to other research.
+
+  - type: dropdown
+    id: paper
+    attributes:
+      label: Paper
+      options:
+        - Beyond Retrieval (LeAP/CITE)
+        - From Memory to Epistemics
+        - Both
+        - New paper proposal
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of extension
+      options:
+        - New theorem or proof
+        - Connection to other framework
+        - Alternative formalization
+        - Benchmark proposal
+        - Implementation approach
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the extension
+    validations:
+      required: true
+
+  - type: textarea
+    id: sketch
+    attributes:
+      label: Proof sketch / approach
+      description: If applicable, outline your approach
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Related work
+      description: Relevant citations

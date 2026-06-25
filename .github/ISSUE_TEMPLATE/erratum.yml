@@ -1,0 +1,35 @@
+name: Erratum
+description: Report a typo, incorrect equation, or factual error
+labels: ["erratum"]
+body:
+  - type: dropdown
+    id: paper
+    attributes:
+      label: Paper
+      options:
+        - Beyond Retrieval (LeAP/CITE)
+        - From Memory to Epistemics
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      placeholder: "Page 5, Equation 3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error
+      description: What is incorrect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: What should it say?
