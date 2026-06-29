@@ -30,7 +30,7 @@
 \usetikzlibrary{shapes,arrows,positioning,fit,backgrounds,calc}
 
 % hyperref loaded last
-\usepackage[bookmarks=true,breaklinks=true]{hyperref}
+\usepackage[bookmarks=true,breaklinks=true,xetex]{hyperref}
 \usepackage{url}
 
 % ============================================================
@@ -460,6 +460,27 @@ Invalid writes are rejected with typed reasons per SAVER~\cite{yuan2026saver}: \
 
 Supersession preserves full audit history while propagating corrections through the dependency graph. The old node is retained with \texttt{status=superseded}, and a \texttt{SUPERSEDES} edge records the reason for the change (\texttt{contradiction}, \texttt{evidence\_shift}, or \texttt{author\_update}). Algorithm~\ref{alg:propagate} then cascades revalidation through all nodes in $\operatorname{deps}(n)$, with complexity linear in the size of the dependency set.
 
+\begin{algorithm}[H]
+\caption{Cascade propagation via async flagging}
+\label{alg:propagate}
+\begin{algorithmic}[1]
+\Require Superseded node $n$, dependency set $\operatorname{deps}(n)$
+\For{each $b \in \operatorname{deps}(n)$}
+    \State $b.\texttt{cascade\_pending} \gets \texttt{true}$
+    \State $b.\texttt{flagged\_at} \gets \texttt{now()}$
+\EndFor
+\State \textbf{async:} Custodian processes flagged nodes
+\For{each flagged $b$}
+    \State Recompute $b$ from current sources
+    \If{$b$ changed}
+        \State Create $b' \gets \texttt{revise}(b)$
+        \State $\texttt{propagate}(b)$ \Comment{recursive}
+    \EndIf
+    \State $b.\texttt{cascade\_pending} \gets \texttt{false}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Epistemic Relations}
 
 Nine typed relations form the epistemic graph:
@@ -601,9 +622,9 @@ Write latency (p95) & 45ms & 320ms & +275ms \\
 \end{tabular}
 \end{table}
 
-\textbf{Contradiction detection.} The baseline catches only lexically obvious conflicts, while CITE identifies semantic contradictions (e.g., ``uses OAuth2'' vs. ``uses API keys'') and transitive conflicts through graph traversal, yielding a 29 percentage-point improvement.
+\textbf{Contradiction detection.} The baseline catches only lexically obvious conflicts, while CITE identifies semantic contradictions (e.g., ``uses OAuth2'' vs. ``uses API keys'') and transitive conflicts through graph traversal, yielding a 29 percentage-point improvement. Detection is a two-stage filter applied at write time. For each candidate $c$ returned by vector search ($\text{cosine}(e_\text{new}, e_c) > 0.7$), we first check for \emph{structural conflict}: whether $c$ shares the same subject and predicate but asserts a different object. If no structural conflict exists, we apply a \emph{semantic fallback}: $\text{cosine} > 0.85$ plus subject-string match. Either trigger creates a \texttt{CONTRADICTS} edge. This catches both explicit disagreements (structural) and paraphrased conflicts (semantic). LLM-based entailment verification is reserved for source support checking during Claim$\rightarrow$Fact promotion (Section~\ref{sec:cite}), not contradiction detection, keeping write latency predictable.
 
-\textbf{Revision propagation.} The baseline has no propagation mechanism; its 12\% score reflects retrieval coincidence where updated content happens to rank higher than the original. CITE walks dependency graphs explicitly via Algorithm~\ref{alg:propagate}, achieving 87\%.
+\textbf{Revision propagation.} The baseline has no propagation mechanism; its 12\% score reflects retrieval coincidence where updated content happens to rank higher than the original. CITE traverses dependency graphs via Algorithm~\ref{alg:propagate}, flagging downstream beliefs for asynchronous re-evaluation and achieving 87\%.
 
 \textbf{Contamination.} The baseline accepts all writes indiscriminately. CITE's write gate rejects ungrounded claims and flagged patterns, blocking 73\% of hallucinated entries at ingestion.
 
@@ -628,7 +649,7 @@ $-$ NCB check & 91\% & 87\% \\
 \end{tabular}
 \end{table}
 
-Dependency propagation is the load-bearing mechanism for revision, while contradiction detection is essential for coherence. The neighborhood consistency check (NCB) provides a marginal improvement on aggregate metrics but catches edge cases that the other mechanisms miss, specifically graph-local inconsistencies that are neither direct contradictions nor missing evidence.
+Dependency propagation is the load-bearing mechanism for revision, while contradiction detection is essential for coherence. The \emph{neighborhood consistency check} (NCB) is a pre-write filter that rejects Wisdom-layer nodes whose content contradicts their declared source nodes---it queries the 2-hop neighborhood for existing \texttt{CONTRADICTS} edges and blocks writes that would inherit unresolved conflicts. NCB provides a marginal improvement on aggregate metrics but catches edge cases that the other mechanisms miss, specifically graph-local inconsistencies that are neither direct contradictions nor missing evidence.
 
 \subsection{Limitations}
 
