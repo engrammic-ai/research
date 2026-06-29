@@ -157,6 +157,20 @@ These are not implementation bugs but consequences of where knowledge lives: in-
 
 This paper argues that \textbf{externalized epistemics} (maintaining beliefs in a substrate external to the models doing inference) is architecturally required for any system with durability, auditability, or multi-agent coherence requirements.
 
+\subsection{Common Workarounds}
+
+Three responses to these failure modes are common in practice. Each fails for structural reasons.
+
+\textbf{Database with timestamps.} ``Store facts in a database with timestamps for provenance.'' Timestamps provide history, not provenance. A database stores ``API uses OAuth2'' and ``API uses API keys'' with different timestamps but cannot determine which is current, whether they contradict, or whether downstream conclusions should be invalidated. The mem0 audit---808 duplicate ``User prefers Vim'' assertions---\textit{was} a database with timestamps. Logging everything is not the same as knowing why the system believes something.
+
+\textbf{Ephemeral agent swarms.} ``Why long-running agents? Spin up targeted agents for each task.'' Swarms need externalized epistemics \textit{more}, not less. Coordination overhead scales with agent count. Knowledge must survive agent termination. Contradictions multiply across agents writing to shared state without coherence enforcement. Audit requires tracing across dead agents. Externalization is not for long-running agents specifically; it is for any system where knowledge crosses agent boundaries---which swarms do by definition.
+
+\textbf{Orchestrator with sufficient context.} ``Use an orchestrator agent with a large context window; throw more tokens at it.'' This is the in-context baseline we evaluate in Section~\ref{sec:eval}: 66\% contradiction detection, 12\% revision propagation. Context is state, not structure---a blob of text with no epistemic types, no coherence invariants, no provenance chains. Context windows are finite; day 47, what was decided on day 3 is gone or garbled. Cost scales with memory size at inference prices. The orchestrator is a single point of failure with no persistence and no recovery.
+
+\textbf{The scaling assumption.} These workarounds share an assumption: that architectural limits can be scaled around. Larger context windows. More agents. Cheaper inference. History suggests otherwise: efficiency gains enable increased usage rather than reducing total cost~\cite{jevons1865}. Weight capacity is bounded (Section~\ref{sec:thesis}). Context windows compress. Coordination overhead grows superlinearly with agent count.
+
+Externalized epistemics is not an optimization but an acknowledgment: durable knowledge requires infrastructure, not larger inference budgets. The question is not ``how much can we scale?'' but ``what architecture respects the constraints?''
+
 \subsection{Contributions}
 
 \begin{enumerate}[noitemsep]
@@ -303,9 +317,9 @@ Systems theory & ACID, audit logs & State outside compute \\
 In-weights memory fails on capacity, durability, and auditability; per-agent learned state fails on multi-agent coherence; session-scoped context fails on persistence. Externalized epistemics is the remaining option.
 
 % ------------------------------------------------------------
-% 3. EPISTEMIC AUGMENTED GENERATION
+% 3. LAYERED EPISTEMIC AGENT PROTOCOL
 % ------------------------------------------------------------
-\section{Epistemic Augmented Generation}
+\section{Layered Epistemic Agent Protocol}
 \label{sec:leap}
 
 Given that epistemic state must be external, what structure should it have?
@@ -630,7 +644,7 @@ LeAP's contribution: four-layer epistemic ontology with write-time coherence, AG
 
 We have argued that externalized epistemics is not an engineering convenience but an architectural requirement. Evidence from information theory (capacity limits), optimization theory (catastrophic forgetting), interpretability (non-auditability), distributed systems (multi-agent coherence), and neuroscience (staged consolidation) converges on the same conclusion: epistemic state must live outside the models doing inference.
 
-Epistemic Augmented Generation implements this requirement with stratified epistemic types, write-time coherence enforcement, and dependency propagation. The framework extends to latent-space world models, opening a research direction toward epistemically-grounded JEPA architectures.
+The Layered Epistemic Agent Protocol (LeAP) implements this requirement with stratified epistemic types, write-time coherence enforcement, and dependency propagation. The framework extends to latent-space world models, opening a research direction toward epistemically-grounded JEPA architectures.
 
 The broader implication: as AI systems become more autonomous and multi-agent, the question of where knowledge lives becomes a question of governance. Externalized epistemics provides the substrate for auditable, correctable, coordinated AI.
 
@@ -755,6 +769,11 @@ Raschka, S., et al. (2025).
 Meta (2025).
 \newblock Sparse Memory Finetuning.
 \newblock \textit{arXiv:2510.15103}. \url{https://arxiv.org/abs/2510.15103}
+
+\bibitem{jevons1865}
+Jevons, W.S. (1865).
+\newblock The Coal Question: An Inquiry Concerning the Progress of the Nation, and the Probable Exhaustion of Our Coal-Mines.
+\newblock Macmillan and Co., London.
 
 \end{thebibliography}
 
