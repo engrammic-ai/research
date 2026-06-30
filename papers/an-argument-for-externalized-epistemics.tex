@@ -93,7 +93,7 @@
     linkcolor=blue!70!black,
     urlcolor=blue!70!black,
     citecolor=blue!70!black,
-    pdftitle={From Memory to Epistemics},
+    pdftitle={An Argument for Externalized Epistemics},
     pdfauthor={Aliasgar Khimani},
     pdfkeywords={agent memory, epistemology, belief revision, externalized state, multi-agent coordination}
 }
@@ -131,7 +131,7 @@
 \begin{abstract}
 Where should an AI agent's knowledge live? Three architectural options exist: in model weights (learned memory), in the context window (session-scoped), or in an external epistemic store (persistent, auditable). We argue that externalization is not merely convenient but \textit{architecturally required} for agents that must maintain coherent beliefs over time, coordinate with other agents, or submit to audit.
 
-We present convergent evidence from five domains: (1) \textbf{information theory}, where neural network weights have a capacity ceiling of approximately 3.6 bits per parameter, insufficient for open-ended knowledge accumulation; (2) \textbf{optimization theory}, where catastrophic forgetting is geometric, not incidental, as new-task gradients implicitly attack old-task knowledge; (3) \textbf{interpretability}, where superposition and nonidentifiability make ``what does the model believe?'' an ill-posed question; (4) \textbf{distributed systems}, where multi-agent coordination requires shared substrate per CAP theorem and Byzantine fault tolerance theory; (5) \textbf{neuroscience}, where biological memory systems externalize episodic content to the hippocampus before slow neocortical consolidation.
+We present convergent evidence from six domains: (1) \textbf{information theory}, where neural network weights have a capacity ceiling of approximately 3.6 bits per parameter, insufficient for open-ended knowledge accumulation; (2) \textbf{optimization theory}, where catastrophic forgetting is geometric, not incidental, as new-task gradients implicitly attack old-task knowledge; (3) \textbf{interpretability}, where superposition and nonidentifiability make ``what does the model believe?'' an ill-posed question; (4) \textbf{distributed systems}, where multi-agent coordination requires shared substrate per CAP theorem and Byzantine fault tolerance theory; (5) \textbf{neuroscience}, where biological memory systems externalize episodic content to the hippocampus before slow neocortical consolidation; (6) \textbf{systems theory}, where the separation of compute and storage is a foundational design principle.
 
 We formalize these constraints as the \textbf{Externalized Epistemics Thesis}: any system requiring durable, auditable, multi-agent-coherent beliefs must maintain epistemic state outside the models doing inference. We present Layered Epistemic Agent Protocol (LeAP) as an architecture satisfying these requirements, achieving 95\% contradiction detection and 87\% revision propagation versus 66\% and 12\% for in-context baselines. The framework extends to latent-space epistemology for JEPA-style world models.
 \end{abstract}
@@ -174,7 +174,7 @@ Externalized epistemics is not an optimization but an acknowledgment: durable kn
 \subsection{Contributions}
 
 \begin{enumerate}[noitemsep]
-    \item \textbf{The Externalized Epistemics Thesis}: A formal argument, grounded in information theory, optimization theory, interpretability research, distributed systems, and neuroscience, that epistemic state must be external to inference.
+    \item \textbf{The Externalized Epistemics Thesis}: A formal argument, grounded in information theory, optimization theory, interpretability research, distributed systems, neuroscience, and systems theory, that epistemic state must be external to inference.
 
     \item \textbf{Layered Epistemic Agent Protocol (LeAP)}: A four-layer architecture implementing externalized epistemics with write-time coherence enforcement and AGM-compliant belief revision.
 
@@ -183,7 +183,7 @@ Externalized epistemics is not an optimization but an acknowledgment: durable kn
     \item \textbf{Extension to world models}: Analysis of how externalized epistemics applies to JEPA-style latent-space architectures.
 \end{enumerate}
 
-The remainder of the paper is organized as follows. Section~\ref{sec:thesis} presents the Externalized Epistemics Thesis with evidence from five domains. Section~\ref{sec:leap} describes the LeAP architecture. Section~\ref{sec:eval} evaluates the system. Section~\ref{sec:extensions} discusses extensions to world models and multi-agent settings.
+The remainder of the paper is organized as follows. Section~\ref{sec:thesis} presents the Externalized Epistemics Thesis with evidence from six domains. Section~\ref{sec:leap} describes the LeAP architecture. Section~\ref{sec:eval} evaluates the system. Section~\ref{sec:extensions} discusses extensions to world models and multi-agent settings.
 
 % ------------------------------------------------------------
 % 2. THE EXTERNALIZED EPISTEMICS THESIS
@@ -193,7 +193,7 @@ The remainder of the paper is organized as follows. Section~\ref{sec:thesis} pre
 
 A system exhibits externalized epistemics when its belief state is maintained in a substrate that is (1) external to weights, (2) external to any single agent, (3) queryable, (4) correctable without retraining, and (5) auditable via provenance chains.
 
-The thesis: any system requiring durable, auditable, multi-agent-coherent beliefs must externalize epistemic state. Evidence from five domains supports this.
+The thesis: any system requiring durable, auditable, multi-agent-coherent beliefs must externalize epistemic state. Evidence from six domains supports this.
 
 \subsection{Information Theory: Weight Capacity Limits}
 
@@ -294,7 +294,7 @@ Truth should not live in the thing doing inference because inference is lossy, n
 
 \subsection{Synthesis}
 
-The five domains converge:
+The six domains converge:
 
 \begin{table}[H]
 \centering
@@ -642,7 +642,7 @@ LeAP's contribution: four-layer epistemic ontology with write-time coherence, AG
 % ------------------------------------------------------------
 \section{Conclusion}
 
-We have argued that externalized epistemics is not an engineering convenience but an architectural requirement. Evidence from information theory (capacity limits), optimization theory (catastrophic forgetting), interpretability (non-auditability), distributed systems (multi-agent coherence), and neuroscience (staged consolidation) converges on the same conclusion: epistemic state must live outside the models doing inference.
+We have argued that externalized epistemics is not an engineering convenience but an architectural requirement. Evidence from information theory (capacity limits), optimization theory (catastrophic forgetting), interpretability (non-auditability), distributed systems (multi-agent coherence), neuroscience (staged consolidation), and systems theory (state outside compute) converges on the same conclusion: epistemic state must live outside the models doing inference.
 
 The Layered Epistemic Agent Protocol (LeAP) implements this requirement with stratified epistemic types, write-time coherence enforcement, and dependency propagation. The framework extends to latent-space world models, opening a research direction toward epistemically-grounded JEPA architectures.
 
@@ -801,7 +801,7 @@ Evidence function $E: \mathcal{T} \to \mathcal{P}(\text{Evidence})$:
 E(O) &= \emptyset \\
 E(C) &= \{e \mid e \text{ is a single source URI}\} \\
 E(F) &= \{e_1, e_2, e_3 \mid e_i \text{ are independent sources}\} \\
-E(B) &= \{f_1, \ldots, f_n \mid f_i \in \text{Facts}, n \geq 2\}
+E(B) &= \{f_1, \ldots, f_n \mid f_i \in \text{Facts}, n \geq 3\}
 \end{align*}
 \end{definition}
 
